@@ -112,8 +112,8 @@ for (index_num in c(1:total_num)) {
   gene_sel_do = gene_sel[gene_sel$log2FoldChange < 0,]
   
   # 输出上调和下调基因的文件
-  file_out_up = paste("data//DEGsid//", "UP_", test_name, ".txt", sep="")
-  file_out_do = paste("data//DEGsid//", "DOWN_", test_name, ".txt", sep="")
+  file_out_up = paste("data//DEGsid//", "UP_", test_name, ".csv", sep="")
+  file_out_do = paste("data//DEGsid//", "DOWN_", test_name, ".csv", sep="")
   
   # 提取上调和下调基因的基因ID列表
   gene_list_up = rownames(gene_sel_up)
@@ -138,8 +138,8 @@ for (index_num in c(1:total_num)) {
   gene_num_do = length(gene_list_do)
   
   # 将上调和下调基因写入文件
-  write.table(gene_sel_up, file = file_out_up, row.names = TRUE, col.names = TRUE)
-  write.table(gene_sel_do, file = file_out_do, row.names = TRUE, col.names = TRUE)
+  write.table(gene_sel_up, file = file_out_up, row.names = TRUE, col.names = TRUE, sep = ",", quote = FALSE)
+  write.table(gene_sel_do, file = file_out_do, row.names = TRUE, col.names = TRUE, sep = ",", quote = FALSE)
   
   # 更新条件名称和基因数量
   condition_name = c(condition_name, paste("UP_", test_name, sep=""), paste("DO_", test_name, sep=""))
@@ -157,7 +157,8 @@ out_final2 = cbind(condition_name, gene_num_out)
 colnames(out_final2) = c("Tests", "DEG number")
 
 # 将结果写入输出文件
-write.table(final_DEGs_list, file = file_final_genelist, row.names = FALSE, sep = "\t", na = "")   ## 所有差异基因列表
-write.table(out_final2, file = file_deg_num, row.names = FALSE, sep = "\t")  ## 各比较中的差异基因数量
-write.csv(final_table, file = file_final_csv, row.names = TRUE, quote = TRUE)  ## 所有基因的最终输出
+write.table(final_DEGs_list, file = file_final_genelist, row.names = FALSE, sep = ",", na = "", quote = FALSE)   ## 所有差异基因列表
 
+write.table(out_final2, file = file_deg_num, row.names = FALSE, sep = ",", quote = FALSE)  ## 各比较中的差异基因数量
+
+write.csv(final_table, file = file_final_csv, row.names = TRUE, quote = TRUE)  ## 所有基因的最终输出
