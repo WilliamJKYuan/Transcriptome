@@ -1,16 +1,33 @@
-#install.packages("dplyr")
-#install.packages("tibble")
-#install.packages("ggplot2")
-#install.packages("xlsx")
-#install.packages("Rmisc") 
+#检查R包状态
+piif <- function(pkg){
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+  tryCatch(
+    {
+      install.packages(pkg)
+      # 安装后二次验证
+      if (!requireNamespace(pkg, quietly = TRUE)) {
+        stop("包安装失败: ", pkg)
+      }
+    },
+    error = function(e) {
+      stop("安装过程中出错: ", e$message)
+    }
+  )
+}
+}
+piif("dplyr")
+piif("tibble")
+piif("ggplot2")
+piif("xlsx")
+piif("Rmisc")
 
 knitr::opts_chunk$set(warning = F, message = F)
+#加载R包
 library(dplyr)
 library(tibble)
 library(ggplot2)
 library(xlsx)
 library(Rmisc)
-#加载R包
 
 get_qPCR <- function(dataset, ref_gene, control_group, grp) {
 #参数设置
@@ -128,15 +145,15 @@ get_qPCR <- function(dataset, ref_gene, control_group, grp) {
 }
 
 #分析数据设置
-sheet_name <- "SampleSheet.xlsx"  #设定数据文件
-refer_gene <- "ReferenceGene"             #设定内参
-ct_grp <- "ReferenceGene"                     #设定对照组
-grop <- c("Group1", "Group2", "Group3")       #设定实验组
+sheet_name <- "0530_ROUND3.xlsx"  #设定数据文件
+refer_gene <- "Actin"             #设定内参
+ct_grp <- "R"                     #设定对照组
+grop <- c("F1", "M1", "M6")       #设定实验组
 
 #数据输入
 dat <- read.xlsx(sheet_name, sheetIndex = 1)
 head(dat)
-# 设置分析参数（集中管理，方便修改）
+# 设置分析参数
 params <- list(dataset = dat, ref_gene = refer_gene, control_group = ct_grp, grp = grop)
 #计算结果
 qPCR_res <- do.call(get_qPCR, params) 
