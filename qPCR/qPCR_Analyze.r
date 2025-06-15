@@ -158,5 +158,6 @@ params <- list(dataset = dat, ref_gene = refer_gene, control_group = ct_grp, grp
 #计算结果
 qPCR_res <- do.call(get_qPCR, params) 
 DT::datatable(qPCR_res$dat)
+write.csv(qPCR_res$dat, file = "qPCR_results.csv", row.names = FALSE)
 #可视化
 qPCR_res$plot
