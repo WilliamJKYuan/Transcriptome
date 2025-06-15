@@ -12,20 +12,11 @@ library(xlsx)
 library(Rmisc)
 #加载R包
 
-get_qPCR <- function(dataset=dat,
-                     ref_gene="Actin",
-                     control_group="R",
-                     grp=c("F1", "M1", "M6")){
-  
-  # dataset=dat                   # 初始数据
-  # ref_gene="GAPDH"              # 内参基因名字
-  # control_group="6H NC"         # 对照组
-  # grp=c("Group1", "Gropu2")                # 实验组排序
-
+get_qPCR <- function(dataset, ref_gene, control_group, grp) {
 #参数设置
  # 参数检查
   if(!any(is.element(colnames(dataset), c("Sample_Name", "Target_Name", "CT")))){
-    stop("Check the sheet's colnames")
+    stop("数据集必须包含列：Sample_Name, Target_Name, CT")
   }
   sampleid <- c("Sample_Name", "Target_Name", "CT")
   dat <- dataset %>% select(all_of(sampleid))
@@ -135,11 +126,19 @@ get_qPCR <- function(dataset=dat,
   res <- list(dat=dat_double_delta, plot=pl)
   return(res)  
 }
-
-dat <- read.xlsx("0530_ROUND3.xlsx", sheetIndex = 1)
+#数据输入
+dat <- read.xlsx("SampleSheet.xlsx", sheetIndex = 1)
 head(dat)
 
-#数据输入
+
+# 设置分析参数（集中管理，方便修改）
+params <- list(
+  dataset = dat,             # 必需：原始数据
+  ref_gene = "ReferenceGene",        # 必需：内参基因名称
+  control_group = "ControlGroup",       # 必需：对照组名称
+  grp = c("Group1", "Group2", "Group3")  # 必需：实验组列表
+)
+
 qPCR_res <- get_qPCR()
 
 DT::datatable(qPCR_res$dat)
