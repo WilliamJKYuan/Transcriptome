@@ -126,22 +126,20 @@ get_qPCR <- function(dataset, ref_gene, control_group, grp) {
   res <- list(dat=dat_double_delta, plot=pl)
   return(res)  
 }
+
+#分析数据设置
+sheet_name <- "SampleSheet.xlsx"  #设定数据文件
+refer_gene <- "ReferenceGene"             #设定内参
+ct_grp <- "ReferenceGene"                     #设定对照组
+grop <- c("Group1", "Group2", "Group3")       #设定实验组
+
 #数据输入
-dat <- read.xlsx("SampleSheet.xlsx", sheetIndex = 1)
+dat <- read.xlsx(sheet_name, sheetIndex = 1)
 head(dat)
-
-
 # 设置分析参数（集中管理，方便修改）
-params <- list(
-  dataset = dat,             # 必需：原始数据
-  ref_gene = "ReferenceGene",        # 必需：内参基因名称
-  control_group = "ControlGroup",       # 必需：对照组名称
-  grp = c("Group1", "Group2", "Group3")  # 必需：实验组列表
-)
-
-qPCR_res <- get_qPCR()
-
-DT::datatable(qPCR_res$dat)
+params <- list(dataset = dat, ref_gene = refer_gene, control_group = ct_grp, grp = grop)
 #计算结果
-
-qPCR_res$plot#可视化
+qPCR_res <- do.call(get_qPCR, params) 
+DT::datatable(qPCR_res$dat)
+#可视化
+qPCR_res$plot
