@@ -1,3 +1,28 @@
+####### 检查r包 #######
+#pkg install if missing
+piif <- function(pkg){
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    tryCatch(
+      {
+        install.packages(pkg)
+        # 安装后二次验证
+        if (!requireNamespace(pkg, quietly = TRUE)) {
+          stop("包安装失败: ", pkg)
+        }
+      },
+      error = function(e) {
+        stop("安装过程中出错: ", e$message)
+      }
+    )
+  }
+}
+piif("GenomicFeatures")
+piif("DESeq2")
+piif("dplyr")
+piif("foreach")
+piif("doParallel")
+piif("parallel")
+
 ### 加载R包
 library(GenomicFeatures)
 library(DESeq2)
