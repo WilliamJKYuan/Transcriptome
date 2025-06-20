@@ -81,8 +81,6 @@ output_file <- "GO_barplot.pdf"  # 可替换为 .png/.tiff/.svg 等
   
   message("已保存GO富集条形图至: ", output_file)
 
-#看来挑选的范围不是很好哈哈哈
-
 
 #如果要画GO的网络关系图，则需要借助topGO跟Rgraphviz 
 #BiocManager::install('topGO') 
