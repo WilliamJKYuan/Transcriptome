@@ -28,12 +28,12 @@ piif <- function(pkg){
 library(clusterProfiler)
 
 #加载背景库文件：genes.new.go.annotation 
-go_anno <- read.delim('genes.new.go.annotation', header=FALSE, stringsAsFactors =FALSE) 
+go_anno <- read.delim('./Results/genes.new.go.annotation', header=FALSE, stringsAsFactors =FALSE) 
 names(go_anno) <- c('gene_id','ID')
 print("背景库加载完成")  
 
 #加载GO注释描述：go_term.list
-go_class <- read.delim('go_term.list', header=FALSE, stringsAsFactors =FALSE) 
+go_class <- read.delim('./Results/go_term.list', header=FALSE, stringsAsFactors =FALSE) 
 names(go_class) <- c('ID','Description','Ontology')
 print("GO注释描述加载完成")  
 
