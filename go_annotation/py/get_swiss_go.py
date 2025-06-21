@@ -1,12 +1,23 @@
-import sys
-import gzip
+import sys 
+import pandas as pd
+import progress
 
-print(">>> 开始读取文件 <<<")
-with gzip.open(sys.argv[1], "rt") as f:  # 使用文本模式读取
+print("Start")
 
-       
-    for line in f:
-        lsplit = line.rstrip().split("\t")
-        if len(lsplit) > 7 and lsplit[7]:  # 检查索引存在性
-            new_line = f"{lsplit[0]}\t{lsplit[7]}"  # 使用f-string更清晰
-            print(new_line)
+print("start importing file 1")
+id_df = pd.read_csv(sys.argv[1],sep='\t',header=None)
+print("success import file 1")
+
+
+print("start importing file 2")
+trinity_df = pd.read_csv(sys.argv[2],sep='\t',header=None) 
+print("success import file 2")
+
+id_df.columns = ['swiss_id','go_id']
+trinity_df.columns = ['trinity_id', 'swiss_id']
+
+df = pd.merge(id_df, trinity_df, on = 'swiss_id', how = 'inner')
+
+df2 = df[['trinity_id','go_id']]
+df2.to_csv('Results/genes.go.annotation',index=None, sep = '\t')
+print("output success")
