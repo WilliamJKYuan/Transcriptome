@@ -102,4 +102,7 @@ write.table(tmp, 'go_rich.significant.txt', sep = '\t', row.names = FALSE, quote
 go_rich_BP <- go_rich 
 go_rich_BP@result <- go_rich_BP@result[as.vector(subset(tmp,  Ontology == 'BP')$ID),] 
 go_rich_BP@ontology <- 'BP' 
+#输出图片
+png("GO_BP.png", width=10, height=10, units="in", res=600)
 plotGOgraph(go_rich_BP)
+dev.off()
