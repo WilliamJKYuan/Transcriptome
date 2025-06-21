@@ -27,7 +27,6 @@ library(clusterProfiler)
 #加载背景库文件：genes.new.go.annotation
 go_anno <- read.delim('genes.new.go.annotation', header=FALSE, stringsAsFactors =FALSE) 
 names(go_anno) <- c('gene_id','ID')
-go_anno$gene_id <- sub("\\.p\\d+$", "", go_anno$gene_id)  # 移除.pX后缀
 print("背景库加载完成")  
 
 #加载GO注释描述：go_term.list
