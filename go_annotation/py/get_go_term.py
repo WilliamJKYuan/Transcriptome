@@ -1,7 +1,7 @@
 #get_go_term.py 
 import sys 
 raw_file = open(sys.argv[1]).read()  
-with open("go_term.list","w") as output:
+with open("Results/go_term.list","w") as output:
      for go_term in raw_file.split("[Term]"):
          go_id = ''
          name = '' 
