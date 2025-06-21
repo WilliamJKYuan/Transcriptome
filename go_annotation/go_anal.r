@@ -55,9 +55,10 @@ go_rich <- enricher(gene = gene_select,
                   maxGSSize = 2500) 
 print("富集分析完成")
 
+dir.create("R_Results") # 创建输出文件夹
 ENRICH.df = as.data.frame(go_rich)
-write.csv(ENRICH.df,"go_rich.csv")
-message("已保存GO富集文件至: go_rich.csv")
+write.csv(ENRICH.df,"R_Results/go_rich.csv")
+message("已保存GO富集文件至: R_Results/go_rich.csv")
 
 if(nrow(go_rich) == 0) {
   print("没有显著富集的GO条目，请调整参数！")
@@ -66,23 +67,30 @@ if(nrow(go_rich) == 0) {
   stop("富集分析未找到显著结果，请检查输入数据或调整参数。")
 }
 
+#类似的可以做另外两个类型的GO富集 
 #使用clusterProfiler进行可视化
 barplot(go_rich,drop=T)
+
 output_file <- "GO_barplot.pdf"  # 可替换为 .png/.tiff/.svg 等
 print("成功输出")
 # 动态调整图像高度（基于条目数量）
-n_cats <- min(20, nrow(go_rich))					# 最多显示20条
-img_height <- max(4, n_cats * 0.5)					# 基础高度4英寸，每条目增加0.5英寸
+n_cats <- min(20, nrow(go_rich))  # 最多显示20条
+img_height <- max(4, n_cats * 0.5) # 基础高度4英寸，每条目增加0.5英寸
+
 # 打开图形设备
-pdf(output_file, width = 10, height = img_height)	# PDF格式
+pdf(output_file, width = 10, height = img_height)  # PDF格式
+
+# 绘制图形（添加标题）
 print(barplot(go_rich, drop = TRUE, 
-              title = "GO Enrichment Analysis",
-              showCategory = n_cats))				# 绘制图形
+              title = "R_Results/GO Enrichment Analysis",
+              showCategory = n_cats))
+
+# 关闭设备（保存文件）
 dev.off()
-message("已保存GO富集条形图至: ", output_file)
+message("已保存GO富集条形图至: R_Results/", output_file)
 
 
-#如果要画GO的网络关系图，使用topGO&Rgraphviz 
+#如果要画GO的网络关系图，则需要借助topGO跟Rgraphviz 
 #BiocManager::install('topGO') 
 #BiocManager::install('Rgraphviz') 
 library(topGO) 
@@ -90,19 +98,36 @@ library(topGO)
 write.table(go_rich, 'go_tmp.txt', sep='\t', row.names = FALSE, quote = FALSE) 
 tmp <- read.delim('go_tmp.txt') 
 tmp <- merge(tmp, go_class[c('ID', 'Ontology')], by = 'ID') 
-tmp <- tmp[!is.na(tmp$Ontology), ]					# 删除NA的行
-# 修改Ontology数据，Ontology列的全称转换为缩写（BP/MF/CC）方可进行比较
+tmp <- tmp[!is.na(tmp$Ontology), ]  # 删除NA的行
 tmp$Ontology <- factor(tmp$Ontology, 
                        levels = c("biological_process", "molecular_function", "cellular_component"),
                        labels = c("BP", "MF", "CC")) %>% as.character()
 tmp <- tmp[c(13,1:9)] 
 tmp <- tmp[order(tmp$pvalue),] 
 
-write.table(tmp, 'go_rich.significant.txt', sep = '\t', row.names = FALSE, quote = FALSE) 
-go_rich_BP <- go_rich 
-go_rich_BP@result <- go_rich_BP@result[as.vector(subset(tmp,  Ontology == 'BP')$ID),] 
-go_rich_BP@ontology <- 'BP' 
-#输出图片
-png("GO_BP.png", width=10, height=10, units="in", res=600)
-plotGOgraph(go_rich_BP)
-dev.off()
+generate_GO_plot <- function(ontology, tmp, go_rich_target, 
+                             sig_file = "go_rich.significant.txt",
+                             width = 10, height = 10, res = 600)  #GO Plot绘制函数
+{
+  #整合数据
+  write.table(tmp, sig_file, sep = '\t', row.names = FALSE, quote = FALSE) 
+  GO_RICH <- go_rich_target 
+  GO_RICH@result <- GO_RICH@result[as.vector(subset(tmp, Ontology == ontology)$ID),] 
+  GO_RICH@ontology <- ontology
+  count_entries <- subset(tmp, Ontology == ontology)
+  if (nrow(count_entries) == 0) {       #判断是否存在响应Ontology
+    message(paste0("No ", ontology, " ontology terms found. Exiting."))
+  }else {
+    filename <- paste0("R_Results/GO_Rich_", ontology, ".png")  # 配置图片文件名
+    # 绘制GO图并保存
+    png(filename, width = width, height = height, units = "in", res = res)
+    plotGOgraph(GO_RICH)
+    dev.off()
+    message("输出图片到：",filename)
+    plotGOgraph(GO_RICH)  # 控制台也输出一次
+  }
+}
+
+for (onto in c("BP", "CC", "MF")) {
+  generate_GO_plot( ontology = onto, tmp, go_rich)
+}
