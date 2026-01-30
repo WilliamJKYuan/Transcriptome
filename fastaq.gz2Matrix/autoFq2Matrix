@@ -160,12 +160,12 @@ R --vanilla --slave <<EOF
     # 设置列名
     colnames(geneCount) = c('sample', 'gene', 'counts')
     colnames(geneTPM)=c('sample','gene','tpm')
-    # 转置
-    counts = dcast(geneCount, formula = gene ~ sample, value.var = "counts", fill = 0)
-    counts=dcast(geneTPM,formula=gene~sample)
+    # 设置格式
+    transCount = dcast(geneCount, formula = gene ~ sample, value.var = "counts", fill = 0)
+    transTPM = dcast(geneTPM,formula=gene~sample)
     # 输出
-    write.table(counts, file="matrixFPKMcount.txt", sep="\t", quote=FALSE, row.names=FALSE)
-    write.table(counts,file="matrixTpm.txt",sep="\t",quote=FALSE,row.names=FALSE)
+    write.table(transCount,file="matrixFPKMcount.txt", sep="\t", quote=FALSE, row.names=FALSE)
+    write.table(transTPM,file="matrixTpm.txt",sep="\t",quote=FALSE,row.names=FALSE)
 EOF
 
 echo "保存了：matrixFPKMcount.txt、matrixTpm.txt"
